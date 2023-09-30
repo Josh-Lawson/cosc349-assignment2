@@ -27,6 +27,34 @@ resource "aws_security_group" "allow_ssh" {
   }
 }
 
+resource "aws_security_group" "allow_web" {
+  name        = "allow_web"
+  description = "Allow inbound web traffic"
+
+  ingress {
+    description = "HTTP from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS from anywhere"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_instance" "user_interface" {
   ami           = "ami-010e83f579f15bba0"
   instance_type = "t2.micro"
