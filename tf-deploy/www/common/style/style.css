@@ -1,0 +1,207 @@
+/* variables for easy colour pallete changes */
+:root {
+    --main-blue: #007BFF;
+    --hover-blue: #0056b3;
+    --soft-gray: #F5F5F5;
+    --text-gray: #333;
+    --border-gray: #E0E0E0;
+    --input-border-gray: #DDD;
+    --transition-speed: 0.3s;
+}
+ 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+ 
+body {
+    background-color: var(--soft-gray);
+    color: var(--text-gray);
+    line-height: 1.6;
+    font-size: 16px;
+}
+ 
+main {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #FFF;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+ 
+h1 {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 2.5em;
+    color: var(--main-blue);
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+ 
+header {
+    background-color: #FFF;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    padding: 20px 0;
+    text-align: center;
+}
+
+nav a, .delete-button {
+    background-color: var(--main-blue);
+    color: #FFF;
+    padding: 12px 18px;
+    margin: 5px;
+    text-decoration: none;
+    border-radius: 50px;
+    transition: background-color var(--transition-speed);
+    font-weight: 500;
+}
+
+nav a:hover, .delete-button:hover {
+    background-color: var(--hover-blue);
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+}
+
+header nav a {
+    margin: 5px 40px;
+}
+ 
+table {
+    width: 100%;
+    margin: 30px 0;
+    border-collapse: collapse;
+}
+ 
+td, th {
+    padding: 12px 15px;
+    border-bottom: 2px solid var(--border-gray);
+    text-align: center;
+}
+ 
+th {
+    background-color: var(--main-blue);
+    color: #FFF;
+    font-weight: 500;
+}
+ 
+form, form.div {
+    display: grid;
+    grid-template-columns: max-content 1fr; 
+    grid-gap: 20px 1em; 
+    text-align: center;
+    margin: auto;
+}
+ 
+label {
+    grid-column: 1 / 2;
+    text-align: right;
+    font-weight: 600;
+}
+ 
+input, button, select, textarea, .delete-button {
+    grid-column: 2 / 3;
+    padding: 12px;
+    border: 2px solid var(--input-border-gray);
+    border-radius: 8px;
+    transition: border-color var(--transition-speed);
+}
+ 
+button, .delete-button {
+    background-color: var(--main-blue);
+    color: #FFF;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+ 
+button:hover {
+    background-color: var(--hover-blue);
+}
+ 
+textarea {
+    height: 4.5em;
+    resize: vertical; 
+}
+
+
+.recipe-details {
+    padding: 20px;
+    border: 2px solid var(--input-border-gray);
+    border-radius: 8px;
+    margin: 20px auto;
+}
+
+.recipe-details p, .recipe-details ul {
+    margin-bottom: 20px;
+}
+
+.recipe-details ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.recipe-details ul li {
+    background-color: #FFF;
+    border: 2px solid var(--input-border-gray);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.recipe-details a {
+    background-color: var(--main-blue);
+    color: #FFF;
+    padding: 12px 18px;
+    text-decoration: none;
+    border-radius: 50px;
+    transition: background-color var(--transition-speed);
+    font-weight: 500;
+}
+
+.recipe-details a:hover {
+    background-color: var(--hover-blue);
+}
+
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+li input {
+    margin-right: 10px;
+}
+
+h2, h3 {
+    font-size: 2em;
+    color: var(--main-blue);
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    text-align: center;
+    padding: 20px 0;
+}
+
+h3 {
+    font-size: 1.5em;
+}
+
+.instructions-container {
+    display: flex;
+}
+
+.instructions-container label {
+    padding-right: 10px;
+    font-weight: bold;
+}
