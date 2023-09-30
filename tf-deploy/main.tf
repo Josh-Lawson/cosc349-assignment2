@@ -49,17 +49,6 @@ resource "aws_instance" "user_interface" {
     Name = "UserInterface"
   }
 
-  provisioner "file" {
-    source      = "user-website.conf"
-    destination = "/opt/rms-app/user-website.conf"
-
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = file(var.private_key_path)
-      host        = self.public_ip
-    }
-}
 }
 
 resource "aws_instance" "admin_interface" {
@@ -83,18 +72,6 @@ resource "aws_instance" "admin_interface" {
   tags = {
     Name = "AdminInterface"
   }
-
-  provisioner "file" {
-    source      = "admin-website.conf"
-    destination = "/opt/rms-app/admin-website.conf"
-
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = file(var.private_key_path)
-      host        = self.public_ip
-    }
-}
 
 }
 
