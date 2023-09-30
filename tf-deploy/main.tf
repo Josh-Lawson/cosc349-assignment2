@@ -2,6 +2,11 @@ provider "aws" {
   region = "us-east-1"
 }
 
+variable "private_key_path" {
+  description = "Path to the SSH private key"
+  type        = string
+}
+
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
   description = "Allow inbound SSH traffic"
@@ -33,17 +38,28 @@ resource "aws_instance" "user_interface" {
   user_data = <<-EOF
               #!/bin/bash
               sudo apt update
-              sudo apt install -y apache2 awscli
-              sudo systemctl start apache2
-              sudo systemctl enable apache2
+              sudo apt install -y apache2 php libapache2-mod-php php-mysql awscli
+              sudo a2dissite 000-default
               cp /opt/rms-app/user-website.conf /etc/apache2/sites-available/
-              sudo a2ensite user-website.conf
-              sudo systemctl reload apache2
+              sudo a2ensite user-website
+              sudo service apache2 restart
               EOF
 
   tags = {
     Name = "UserInterface"
   }
+
+  provisioner "file" {
+    source      = "user-website.conf"
+    destination = "/opt/rms-app/user-website.conf"
+
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = file(var.private_key_path)
+      host        = self.public_ip
+    }
+}
 }
 
 resource "aws_instance" "admin_interface" {
@@ -57,17 +73,29 @@ resource "aws_instance" "admin_interface" {
   user_data = <<-EOF
               #!/bin/bash
               sudo apt update
-              sudo apt install -y apache2 awscli
-              sudo systemctl start apache2
-              sudo systemctl enable apache2
+              sudo apt install -y apache2 php libapache2-mod-php php-mysql awscli
+              sudo a2dissite 000-default
               cp /opt/rms-app/user-website.conf /etc/apache2/sites-available/
-              sudo a2ensite user-website.conf
+              sudo a2ensite admin-website
               sudo systemctl reload apache2
               EOF
 
   tags = {
     Name = "AdminInterface"
   }
+
+  provisioner "file" {
+    source      = "admin-website.conf"
+    destination = "/opt/rms-app/admin-website.conf"
+
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = file(var.private_key_path)
+      host        = self.public_ip
+    }
+}
+
 }
 
 output "user_interface" {
