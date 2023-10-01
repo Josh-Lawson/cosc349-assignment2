@@ -10,18 +10,17 @@
     <main>
 
         <h1>
-            <?php echo $_SERVER['SERVER_PORT'] == 8081 ? "Admin Sign In" : "Sign In" ?>
+            <?php echo $_SERVER['SERVER_ADDR'] == "ADMIN_IP_PLACEHOLDER" ? "Admin Sign In" : "Sign In" ?>
         </h1>
 
-        <?php if ($_SERVER['SERVER_PORT'] == 8081): ?>
+        <?php if ($_SERVER['SERVER_ADDR'] == "ADMIN_IP_PLACEHOLDER"): ?>
             <h3>Please use your admin credentials to sign in to the admin interface</h3><br>
         <?php endif; ?>
         <fieldset>
 
-            <?php if ($_SERVER['SERVER_PORT'] == 8080): ?>
+            <?php if ($_SERVER['SERVER_ADDR'] == "USER_IP_PLACEHOLDER"): ?>
                 <legend>&nbsp;Please Sign In Using Your Username And Password</legend><br>
             <?php endif; ?>
-
 
             <form action="authenticate.php" method="POST">
 
@@ -31,7 +30,7 @@
                     required pattern=".{8,}" title="Password must be at least 8 characters.">
                 <button type="submit">Sign In</button>
             </form><br>
-            <?php if ($_SERVER['SERVER_PORT'] == 8080): ?>
+            <?php if ($_SERVER['SERVER_ADDR'] == "USER_IP_PLACEHOLDER"): ?>
                 <p>&nbsp;Don't have an account? <a href="create_account.php">Create one</a></p>
             <?php endif; ?>
         </fieldset>

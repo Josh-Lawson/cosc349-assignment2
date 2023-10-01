@@ -35,9 +35,9 @@ $recipeId = $_GET['recipeId'];
  * Redirects the user to the appropriate recipe view page based on their role
  */
 if($row['role'] == 'admin'){
-    header("Location: http://127.0.0.1:8081/recipe_admin_view.php?recipeId=$recipeId");
+    header('Location: http://ADMIN_IP_PLACEHOLDER/recipe_admin_view.php?recipeId=$recipeId');
 } else {
-    header("Location: http://127.0.0.1:8080/recipe_user_view.php?recipeId=$recipeId");
+    header('Location: http://USER_IP_PLACEHOLDER/recipe_user_view.php?recipeId=$recipeId');
 }
 $conn->close();
 ?>

@@ -41,7 +41,7 @@ if ($result->num_rows > 0) {
         $_SESSION['userId'] = $row['userId'];
         $_SESSION['role'] = $row['role'];
         if ($row['role'] == 'admin') {
-            header('Location: http://127.0.0.1:8081/admin.php');
+            header('Location: http://ADMIN_IP_PLACEHOLDER/admin.php');
         } else {
             header('Location: /index.php');
         }
