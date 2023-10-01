@@ -1,17 +1,12 @@
 <?php
+include '../common/db_config.php';
+
 /**
  * @file
  * This file is used to display a recipe to the user.
  * 
  */
 
-/**
- * Holds database connection details
- */
-$servername = "192.168.56.12";
-$username = "admin";
-$password = "admin_pw";
-$dbname = "RecipeManagementSystem";
 
 /**
  * Creates a new mysqli object and connects to the database

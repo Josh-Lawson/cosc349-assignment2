@@ -1,4 +1,6 @@
 <?php
+include '../common/db_config.php';
+
 /**
  * @file
  * This file is used to add a new recipe.
@@ -7,13 +9,6 @@
 
 session_start();
 
-/**
- * Holds database connection details
- */
-$servername = "192.168.56.12";
-$dbusername = "admin";
-$dbpassword = "admin_pw";
-$dbname = "RecipeManagementSystem";
 
 /**
  * Creates a new mysqli object and connects to the database
