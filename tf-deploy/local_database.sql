@@ -16,13 +16,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `ingredient`
---
+-- Table structure for table `Ingredient`
+--S
 
-DROP TABLE IF EXISTS `ingredient`;
+DROP TABLE IF EXISTS `Ingredient`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `ingredient` (
+CREATE TABLE `Ingredient` (
   `ingredientId` int NOT NULL AUTO_INCREMENT,
   `ingredientName` varchar(512) NOT NULL,
   PRIMARY KEY (`ingredientId`)
@@ -30,22 +30,22 @@ CREATE TABLE `ingredient` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `ingredient`
+-- Dumping data for table `Ingredient`
 --
 
-LOCK TABLES `ingredient` WRITE;
-/*!40000 ALTER TABLE `ingredient` DISABLE KEYS */;
-/*!40000 ALTER TABLE `ingredient` ENABLE KEYS */;
+LOCK TABLES `Ingredient` WRITE;
+/*!40000 ALTER TABLE `Ingredient` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Ingredient` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `recipe`
+-- Table structure for table `Recipe`
 --
 
-DROP TABLE IF EXISTS `recipe`;
+DROP TABLE IF EXISTS `Recipe`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `recipe` (
+CREATE TABLE `Recipe` (
   `recipeId` int NOT NULL AUTO_INCREMENT,
   `userId` int DEFAULT NULL,
   `recipeName` varchar(255) NOT NULL,
@@ -58,49 +58,49 @@ CREATE TABLE `recipe` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `recipe`
+-- Dumping data for table `Recipe`
 --
 
-LOCK TABLES `recipe` WRITE;
-/*!40000 ALTER TABLE `recipe` DISABLE KEYS */;
-/*!40000 ALTER TABLE `recipe` ENABLE KEYS */;
+LOCK TABLES `Recipe` WRITE;
+/*!40000 ALTER TABLE `Recipe` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Recipe` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `recipeingredient`
+-- Table structure for table `RecipeIngredient`
 --
 
-DROP TABLE IF EXISTS `recipeingredient`;
+DROP TABLE IF EXISTS `RecipeIngredient`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `recipeingredient` (
+CREATE TABLE `RecipeIngredient` (
   `recipeId` int NOT NULL,
   `ingredientId` int NOT NULL,
   `quantity` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`recipeId`,`ingredientId`),
   KEY `ingredientId` (`ingredientId`),
-  CONSTRAINT `recipeingredient_ibfk_1` FOREIGN KEY (`recipeId`) REFERENCES `recipe` (`recipeId`),
-  CONSTRAINT `recipeingredient_ibfk_2` FOREIGN KEY (`ingredientId`) REFERENCES `ingredient` (`ingredientId`)
+  CONSTRAINT `recipeingredient_ibfk_1` FOREIGN KEY (`recipeId`) REFERENCES `Recipe` (`recipeId`),
+  CONSTRAINT `recipeingredient_ibfk_2` FOREIGN KEY (`ingredientId`) REFERENCES `Ingredient` (`ingredientId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `recipeingredient`
+-- Dumping data for table `RecipeIngredient`
 --
 
-LOCK TABLES `recipeingredient` WRITE;
-/*!40000 ALTER TABLE `recipeingredient` DISABLE KEYS */;
-/*!40000 ALTER TABLE `recipeingredient` ENABLE KEYS */;
+LOCK TABLES `RecipeIngredient` WRITE;
+/*!40000 ALTER TABLE `RecipeIngredient` DISABLE KEYS */;
+/*!40000 ALTER TABLE `RecipeIngredient` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `user`
+-- Table structure for table `User`
 --
 
-DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `User`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user` (
+CREATE TABLE `User` (
   `userId` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `username` varchar(255) DEFAULT NULL,
@@ -113,12 +113,12 @@ CREATE TABLE `user` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `user`
+-- Dumping data for table `User`
 --
 
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+LOCK TABLES `User` WRITE;
+/*!40000 ALTER TABLE `User` DISABLE KEYS */;
+/*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
