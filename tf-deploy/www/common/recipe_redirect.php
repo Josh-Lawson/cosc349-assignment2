@@ -12,7 +12,7 @@ session_start();
 /**
  * Creates a new mysqli object and connects to the database
  */
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
