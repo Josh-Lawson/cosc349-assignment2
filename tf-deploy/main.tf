@@ -108,10 +108,10 @@ resource "aws_instance" "admin_interface" {
 }
 
 output "user_interface" {
-  value = aws_instance.admin_interface.public_ip
+  value = aws_instance.user_interface.public_ip
 }
 
 output "admin_interface" {
-  value = aws_instance.user_interface.public_ip
+  value = aws_instance.admin_interface.public_ip
 }
 
