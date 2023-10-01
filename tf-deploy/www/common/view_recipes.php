@@ -11,7 +11,7 @@ include '../common/db_config.php';
 /**
  * Creates a new mysqli object and connects to the database
  */
-$conn = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
+$conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
