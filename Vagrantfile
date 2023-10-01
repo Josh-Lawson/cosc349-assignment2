@@ -10,6 +10,7 @@ Vagrant.configure("2") do |config|
     echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" >/etc/apt/sources.list.d/hashicorp.list
     apt-get update
     apt-get install terraform
+    sudo apt install mysql-client-core-8.0
     runuser -l vagrant -c 'mkdir ~/.aws'
     export LC_ALL="en_US.UTF-8"
     pip3 install boto3
