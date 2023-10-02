@@ -133,15 +133,15 @@ Admin will be able to:
     - `sudo chown ubuntu:ubuntu /etc/apache2/sites-available/`
 3. Remove the default apache page:
     - `sudo rm /var/www/html/index.html`
-4. Run these two commands to enable our configurations and restart the server:
-    - `sudo a2ensite user-website`
-    - `sudo systemctl reload apache2`
-5. Exit the EC2 by runing `exit`
-6. Run the following commands to copy files into the user interface EC2 using your private key: 
+4. Exit the EC2 by runing `exit`
+5. Run the following commands to copy files into the user interface EC2 using your private key: 
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\user ubuntu@[user-EC2-ip]:/var/www/html/`
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[user-EC2-ip]:/var/www/html/`
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\user-website.conf ubuntu@[user-EC2-ip]:/etc/apache2/sites-available/`
     - `scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[user-EC2-ip]:/var/www/html/common`
+6. Run these two commands to enable our configurations and restart the server:
+    - `sudo a2ensite user-website`
+    - `sudo systemctl reload apache2`
 
 ### Admin Interface EC2 Web Server
 
@@ -152,15 +152,15 @@ Admin will be able to:
     - `sudo chown ubuntu:ubuntu /etc/apache2/sites-available/`
 3. Remove the default apache page:
     - `sudo rm /var/www/html/index.html` 
-4. Run these two commands to enable our configurations and restart the server:
-    - `sudo a2ensite admin-website`
-    - `sudo systemctl reload apache2`
-5. Exit the EC2 by runing `exit`
-6. Run the following commands to copy files into the admin interface EC2 using your private key: 
+4. Exit the EC2 by runing `exit`
+5. Run the following commands to copy files into the admin interface EC2 using your private key: 
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\admin ubuntu@[admin-EC2-ip]:/var/www/html/`
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[admin-EC2-ip]:/var/www/html/`
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\admin-website.conf ubuntu@[admin-EC2-ip]:/etc/apache2/sites-available/`
     - `scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[admin-EC2-ip]:/var/www/html/common`
+6. Run these two commands to enable our configurations and restart the server:
+    - `sudo a2ensite admin-website`
+    - `sudo systemctl reload apache2`
 
 ### Create Database and Load in Data
 
@@ -168,15 +168,28 @@ Admin will be able to:
     - `mysql -h [RDS-Endpoint] -P 3306 -u admin -p mydb < local_database.sql`
     - When prompted enter the mysql password (same password that was set by database.tf)
     - Make sure to replace the [RDS-Endpoint] with the actual endpoint which should have been printed
+    - If you are copying the endpoint from the output of the database.tf file, make sure not to include the port number
     to the terminal output by the database.tf after running terraform apply
 2. Run the following command to load dummy data into the database:
     - `mysql -h [RDS-Endpoint] -P 3306 -u admin -p mydb < insert-data.sql`
     - Enter the mysql password when prompted
 
 ### (Optional) Test database has been configured correctly
+
 1. Ssh into RDS instance by running the follwoing:
     - `mysql -h [RDS-Endpoint] -P 3306 -u admin -p`
     - Enter the mysql password when prompted
     - Run `use mydb;`
     - Run `show tables;`, you should see the expected tables printed
     - Run a query, for example: `select * from Recipe;`, you should see some dummy recipes printed
+
+### Visit application in browser
+
+The application should be fully deloyed and running by this point, you can view the application by visiting either of 
+the public IP address for the EC2 instances, both of which should redirect you to the sign in page, where you will have 
+the option to create an account or log in using the pre loaded dummy data:
+    - Use username "Sam123" and password "password123" to enter the application with a user level privilege (user interface)
+    - Use username "admin1" and password "password1" to enter the application with an admin level privilege (admin interface)
+
+Please note that creating an account will only grant you with the basic user level privilege and access to the user 
+interface. Please use the pre loaded admin credentials to access the admin interface.
