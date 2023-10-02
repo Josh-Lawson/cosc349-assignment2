@@ -18,6 +18,10 @@ if (!isset($_SESSION['username'])) {
 $adminIp = getenv('ADMIN_IP');
 $userIp = getenv('USER_IP');
 
+$AAK = getenv('AWS_ACCESS_KEY');
+$ASK = getenv('AWS_SECRET_KEY');
+$SNS_TOPIC_ARN = getenv('SNS_TOPIC_ARN');
+
 ?>
 
 <!DOCTYPE html>
@@ -32,6 +36,13 @@ $userIp = getenv('USER_IP');
 <body>
     <div class="navbar">
         <div>
+
+        <?php
+    echo $AAK;
+    echo $ASK;
+    echo $SNS_TOPIC_ARN;
+    ?>
+
             <?php
             /**
              * Displays the user's username and a sign out button if the user is signed in.
@@ -45,6 +56,7 @@ $userIp = getenv('USER_IP');
                 <form action="../common/sign_out.php" method="POST" style="display:inline;">
                     <button type="submit">Sign Out</button>
                 </form>
+                <a href="../common/subscribe.php">Subscribe for Notifications</a>
                 <?php
             } else {
                 echo "<a href=\"http://$userIp/common/sign_in.php\">Sign In</a>";
