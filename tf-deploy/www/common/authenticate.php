@@ -32,6 +32,8 @@ $stmt->execute();
 
 $result = $stmt->get_result();
 
+$adminIp = getenv('ADMIN_IP');
+
 /**
  * If the username and password are correct, set the session variables and redirect to the appropriate page
  */
@@ -41,7 +43,7 @@ if ($result->num_rows > 0) {
         $_SESSION['userId'] = $row['userId'];
         $_SESSION['role'] = $row['role'];
         if ($row['role'] == 'admin') {
-            header('Location: http://ADMIN_IP_PLACEHOLDER/admin.php');
+            header('Location: http://$adminIp/admin.php');
         } else {
             header('Location: /index.php');
         }

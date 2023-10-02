@@ -90,20 +90,23 @@ Admin will be able to:
     - `terraform plan`
     - `terraform apply`
         - type `yes` when prompted
-2. Next we will be saving the IP adresses of the EC2 instances, and th eendpoint
-    of the RDS instance, run the following 3 commands:
+2. Next we will be saving the IP addresses of the EC2 instances, the servers' internal 
+    IP addresses, and the endpoint of the RDS instance, run the following five commands:
     - `RDS_ENDPOINT=$(terraform output rds_endpoint | tr -d '"')`
     - `USER_IP=$(terraform output user_interface | tr -d '"')`
     - `ADMIN_IP=$(terraform output admin_interface | tr -d '"')`
+    - `USER_INTERNAL_IP=$(terraform output user_internal_ip)`
+    - `ADMIN_INTERNAL_IP=$(terraform output admin_internal_ip)`
 
-### Setting the EC2 IP addresses and RDS Endpoint
+### Setting the Internal IP Addresses
 
-1. Run the following commands to set the EC2 IP addresses in the php files:
-    - `sed -i "s/ADMIN_IP_PLACEHOLDER/${ADMIN_IP}/g" www/common/authenticate.php`
-    - `sed -i "s/USER_IP_PLACEHOLDER/${USER_IP}/g; s/ADMIN_IP_PLACEHOLDER/${ADMIN_IP}/g" www/common/navbar.php`
-    - `sed -i "s/USER_IP_PLACEHOLDER/${USER_IP}/g; s/ADMIN_IP_PLACEHOLDER/${ADMIN_IP}/g" www/common/recipe_redirect.php`
-    - `sed -i "s/USER_IP_PLACEHOLDER/${USER_IP}/g; s/ADMIN_IP_PLACEHOLDER/${ADMIN_IP}/g" www/common/sign_in.php`
-    - `sed -i "s/USER_IP_PLACEHOLDER/${USER_IP}/g" www/common/sign_out.php`
+1. Run the following commands to replace the placeholders for the servers' internal IP addresses
+    in the .conf files:
+    - `sed -i "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" admin-website.conf`
+    - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" path_to_conf_files/user-website.conf`
+
+### Setting the RDS Endpoint
+
 2. Run the following command to use the RDS endpoint ot create a db_config.php which will be used by the
     php files to get the database credentials:
     - `sed "s/RDS_ENDPOINT_PLACEHOLDER/$RDS_ENDPOINT/" db_config_template.php > db_config.php`

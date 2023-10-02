@@ -93,6 +93,11 @@ resource "aws_instance" "admin_interface" {
 
   user_data = <<-EOF
               #!/bin/bash
+
+              cp admin-website.conf /etc/apache2/sites-available/admin-website.conf
+              INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
+              sed -i "s/ADMIN_IP_PLACEHOLDER/$INTERNAL_IP/g" /etc/apache2/sites-available/admin-website.conf
+
               sudo apt update
               sudo apt install -y apache2 php libapache2-mod-php php-mysql awscli
               sudo a2dissite 000-default
@@ -113,5 +118,15 @@ output "user_interface" {
 
 output "admin_interface" {
   value = aws_instance.admin_interface.public_ip
+}
+
+output "admin_internal_ip" {
+  value = aws_instance.admin_instance.private_ip
+  description = "Internal IP address for the admin instance"
+}
+
+output "user_internal_ip" {
+  value = aws_instance.user_instance.private_ip
+  description = "Internal IP address for the user instance"
 }
 

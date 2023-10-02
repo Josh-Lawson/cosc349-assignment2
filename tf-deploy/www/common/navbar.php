@@ -14,6 +14,10 @@ if (!isset($_SESSION['username'])) {
     header('Location: ../common/sign_in.php');
     exit();
 }
+
+$adminIp = getenv('ADMIN_IP');
+$userIp = getenv('USER_IP');
+
 ?>
 
 <!DOCTYPE html>
@@ -35,7 +39,7 @@ if (!isset($_SESSION['username'])) {
             if (isset($_SESSION['username'])) {
                 echo 'Welcome, ' . $_SESSION['username'];
                 ?>
-                <form action="<?php echo $_SESSION['role'] == 'admin' ? 'http://ADMIN_IP_PLACEHOLDER/admin.php' : 'http://ADMIN_IP_PLACEHOLDER/'; ?>" method="GET" style="display:inline;">
+                <form action="<?php echo $_SESSION['role'] == 'admin' ? 'http://$adminIp/admin.php' : 'http://$adminIp/'; ?>" method="GET" style="display:inline;">
                     <button type="submit">Home</button>
                 </form>
                 <form action="../common/sign_out.php" method="POST" style="display:inline;">
@@ -43,7 +47,7 @@ if (!isset($_SESSION['username'])) {
                 </form>
                 <?php
             } else {
-                echo '<a href="http://USER_IP_PLACEHOLDER/common/sign_in.php">Sign In</a>';
+                echo '<a href="http://$userIp/common/sign_in.php">Sign In</a>';
             }
             ?>
         </div>

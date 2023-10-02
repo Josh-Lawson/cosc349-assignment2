@@ -6,6 +6,9 @@
  */
 session_start();
 session_destroy();
-header('Location: http://USER_IP_PLACEHOLDER/common/sign_in.php');
+
+$userIp = getenv('USER_IP');
+
+header('Location: http://$userIp/common/sign_in.php');
 exit();
 ?>
