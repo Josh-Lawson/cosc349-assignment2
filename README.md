@@ -78,7 +78,7 @@ Admin will be able to:
 
 1. From your AWS account copy the AWS CLI
 2. From the vagrant virtual machine command line run `nano ~/.aws/credentials`
-3. Past the AWS CLI into the ~/.aws/credentials.
+3. Paste the AWS CLI into the ~/.aws/credentials.
 4. Run `export TF_VAR_private_key_path="[path/to/private/key]"` replacing the placeholder with 
     the actual path to the private key
 
