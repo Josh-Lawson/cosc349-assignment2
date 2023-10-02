@@ -39,7 +39,7 @@ $userIp = getenv('USER_IP');
             if (isset($_SESSION['username'])) {
                 echo 'Welcome, ' . $_SESSION['username'];
                 ?>
-                <form action="<?php echo $_SESSION['role'] == 'admin' ? "http://$adminIp/admin.php" : "http://$adminIp/"; ?>" method="GET" style="display:inline;">
+                <form action="<?php echo $_SESSION['role'] == 'admin' ? "http://$adminIp/admin.php" : "http://$userIp/index.php"; ?>" method="GET" style="display:inline;">
                     <button type="submit">Home</button>
                 </form>
                 <form action="../common/sign_out.php" method="POST" style="display:inline;">
