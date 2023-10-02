@@ -94,8 +94,8 @@ Admin will be able to:
         such as to ssh into the EC2 instance.
 2. Next set your AWS access key and AWS secret key using the following commands, replacing the square 
     brackets with the actual values which can be found in your AWS account or in ~/.aws/credentials:
-    - `AWS_ACCESS_KEY=$([AWS ACCESS KEY])`
-    - `AWS_SECRET_KEY=$([AWS SECRET KEY])`
+    - `AWS_ACCESS_KEY=[AWS ACCESS KEY]`
+    - `AWS_SECRET_KEY=[AWS SECRET KEY]`
 3. Next we will be saving the IP addresses of the EC2 instances, the servers' internal 
     IP addresses, the endpoint of the RDS instance, and the sns topic arn, run the following commands:
     - `RDS_ENDPOINT=$(terraform output rds_endpoint | tr -d '"')`
@@ -106,7 +106,7 @@ Admin will be able to:
     - `SNS_TOPIC_ARN=$(terraform output sns_topic_arn | tr -d '"')`
 
 
-### Setting the Internal IP Addresses
+### Setting Dynamic Variables in .conf files
 
 2. Run the following commands to replace the placeholders for the servers' internal IP addresses
     into both .conf files:
@@ -124,6 +124,9 @@ Admin will be able to:
     - `sed -i "s/AWS_SECRET_KEY_PLACEHOLDER/$AWS_SECRET_KEY/g" admin-website.conf`
     - `sed -i "s/AWS_ACCESS_KEY_PLACEHOLDER/$AWS_ACCESS_KEY/g" user-website.conf`
     - `sed -i "s/AWS_SECRET_KEY_PLACEHOLDER/$AWS_SECRET_KEY/g" user-website.conf`
+4/ Run the following commands to do the same for the SNS Topic ARN:
+    - `sed -i "s/SNS_TOPIC_ARN_PLACEHOLDER/$SNS_TOPIC_ARN/g" user-website.conf`
+    - `sed -i "s/SNS_TOPIC_ARN_PLACEHOLDER/$SNS_TOPIC_ARN/g" admin-website.conf`
 
 
 ### Setting the RDS Endpoint
