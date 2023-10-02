@@ -103,7 +103,7 @@ Admin will be able to:
 1. Run the following commands to replace the placeholders for the servers' internal IP addresses
     in the .conf files:
     - `sed -i "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" admin-website.conf`
-    - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" path_to_conf_files/user-website.conf`
+    - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" user-website.conf`
 
 ### Setting the RDS Endpoint
 
