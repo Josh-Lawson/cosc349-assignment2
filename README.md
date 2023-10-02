@@ -90,6 +90,8 @@ Admin will be able to:
     - `terraform plan`
     - `terraform apply`
         - type `yes` when prompted
+        - take note of the IP addresses printed by the .tf file as you will need them later, 
+        such as to ssh into the EC2 instance.
 2. Next we will be saving the IP addresses of the EC2 instances, the servers' internal 
     IP addresses, and the endpoint of the RDS instance, run the following five commands:
     - `RDS_ENDPOINT=$(terraform output rds_endpoint | tr -d '"')`
@@ -103,7 +105,9 @@ Admin will be able to:
 1. Run the following commands to replace the placeholders for the servers' internal IP addresses
     in the .conf files:
     - `sed -i "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" admin-website.conf`
-    - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" path_to_conf_files/user-website.conf`
+    - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" admin-website.conf`
+    - `sed -i "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" user-website.conf`
+    - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" user-website.conf`
 
 ### Setting the RDS Endpoint
 
@@ -120,29 +124,39 @@ Admin will be able to:
     - `sudo systemctl status apache2`
     - If the apache sever is running you should see output similar to the following:
 
-### Uploading files to the User Interface EC2
+### User Interface EC2 Web Server
 
 1. In a new terminal run the following command to ssh into the user interface EC2:
     - `ssh -i ~\.ssh\cosc349-2023.pem ubuntu@[user-EC2-ip]`
 2. Run the follwoing commands:
     - `sudo chown ubuntu:ubuntu /var/www/html/`
     - `sudo chown ubuntu:ubuntu /etc/apache2/sites-available/`
-3. Exit the EC2 by runing `exit`
-4. Run the following commands to copy files into the user interface EC2 using your private key: 
+3. Remove the default apache page:
+    - `sudo rm /var/www/html/index.html`
+4. Run these two commands to enable our configurations and restart the server:
+    - `sudo a2ensite user-website`
+    - `sudo systemctl reload apache2`
+5. Exit the EC2 by runing `exit`
+6. Run the following commands to copy files into the user interface EC2 using your private key: 
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\user ubuntu@[user-EC2-ip]:/var/www/html/`
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[user-EC2-ip]:/var/www/html/`
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\user-website.conf ubuntu@[user-EC2-ip]:/etc/apache2/sites-available/`
     - `scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[user-EC2-ip]:/var/www/html/common`
 
-### Uploading files to the Admin Interface EC2
+### Admin Interface EC2 Web Server
 
 1. In a new terminal run the following command to ssh into the admin interface EC2:
     - `ssh -i ~\.ssh\cosc349-2023.pem ubuntu@[admin-EC2-ip]`
 2. Run the follwoing commands:
     - `sudo chown ubuntu:ubuntu /var/www/html/`
     - `sudo chown ubuntu:ubuntu /etc/apache2/sites-available/`
-3. Exit the EC2 by runing `exit`
-4. Run the following commands to copy files into the admin interface EC2 using your private key: 
+3. Remove the default apache page:
+    - `sudo rm /var/www/html/index.html` 
+4. Run these two commands to enable our configurations and restart the server:
+    - `sudo a2ensite admin-website`
+    - `sudo systemctl reload apache2`
+5. Exit the EC2 by runing `exit`
+6. Run the following commands to copy files into the admin interface EC2 using your private key: 
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\admin ubuntu@[admin-EC2-ip]:/var/www/html/`
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[admin-EC2-ip]:/var/www/html/`
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\admin-website.conf ubuntu@[admin-EC2-ip]:/etc/apache2/sites-available/`
@@ -150,7 +164,7 @@ Admin will be able to:
 
 ### Create Database and Load in Data
 
-1. Run the following command to create the database: 
+1. Back in the helper vm terminal, run the following command to create the database: 
     - `mysql -h [RDS-Endpoint] -P 3306 -u admin -p mydb < local_database.sql`
     - When prompted enter the mysql password (same password that was set by database.tf)
     - Make sure to replace the [RDS-Endpoint] with the actual endpoint which should have been printed
