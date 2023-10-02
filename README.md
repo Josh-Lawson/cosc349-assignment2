@@ -92,27 +92,39 @@ Admin will be able to:
         - type `yes` when prompted
         - take note of the IP addresses printed by the .tf file as you will need them later, 
         such as to ssh into the EC2 instance.
-2. Next we will be saving the IP addresses of the EC2 instances, the servers' internal 
-    IP addresses, and the endpoint of the RDS instance, run the following five commands:
+2. Next set your AWS access key and AWS secret key using the following commands, replacing the square 
+    brackets with the actual values which can be found in your AWS account or in ~/.aws/credentials:
+    - `AWS_ACCESS_KEY=$([AWS ACCESS KEY])`
+    - `AWS_SECRET_KEY=$([AWS SECRET KEY])`
+3. Next we will be saving the IP addresses of the EC2 instances, the servers' internal 
+    IP addresses, the endpoint of the RDS instance, and the sns topic arn, run the following commands:
     - `RDS_ENDPOINT=$(terraform output rds_endpoint | tr -d '"')`
     - `USER_IP=$(terraform output user_interface | tr -d '"')`
     - `ADMIN_IP=$(terraform output admin_interface | tr -d '"')`
     - `USER_INTERNAL_IP=$(terraform output user_internal_ip | tr -d '"')`
     - `ADMIN_INTERNAL_IP=$(terraform output admin_internal_ip | tr -d '"')`
+    - `SNS_TOPIC_ARN=$(terraform output sns_topic_arn | tr -d '"')`
+
 
 ### Setting the Internal IP Addresses
 
-1. Run the following commands to replace the placeholders for the EC2 public IP addresses
+2. Run the following commands to replace the placeholders for the servers' internal IP addresses
     into both .conf files:
-    - `sed -i "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" admin-website.conf`
-    - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" admin-website.conf`
-    - `sed -i "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" user-website.conf`
-    - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" user-website.conf`
-2. Run the following commands to do the same for the servers' internal IP addresses:
     - `sed -i "s/INTERNAL_ADMIN_IP_PLACEHOLDER/$ADMIN_INTERNAL_IP/g" admin-website.conf`
     - `sed -i "s/INTERNAL_USER_IP_PLACEHOLDER/$USER_INTERNAL_IP/g" admin-website.conf`
     - `sed -i "s/INTERNAL_ADMIN_IP_PLACEHOLDER/$ADMIN_INTERNAL_IP/g" user-website.conf`
     - `sed -i "s/INTERNAL_USER_IP_PLACEHOLDER/$USER_INTERNAL_IP/g" user-website.conf`
+1. Run the following commands to do the same for the EC2 public IP addresses:
+    - `sed -i "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" admin-website.conf`
+    - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" admin-website.conf`
+    - `sed -i "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" user-website.conf`
+    - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" user-website.conf`
+3. Run the following commands to do the same for the AWS access and secret keys:
+    - `sed -i "s/AWS_ACCESS_KEY_PLACEHOLDER/$AWS_ACCESS_KEY/g" admin-website.conf`
+    - `sed -i "s/AWS_SECRET_KEY_PLACEHOLDER/$AWS_SECRET_KEY/g" admin-website.conf`
+    - `sed -i "s/AWS_ACCESS_KEY_PLACEHOLDER/$AWS_ACCESS_KEY/g" user-website.conf`
+    - `sed -i "s/AWS_SECRET_KEY_PLACEHOLDER/$AWS_SECRET_KEY/g" user-website.conf`
+
 
 ### Setting the RDS Endpoint
 
@@ -138,13 +150,17 @@ Admin will be able to:
     - `sudo chown ubuntu:ubuntu /etc/apache2/sites-available/`
 3. Remove the default apache page:
     - `sudo rm /var/www/html/index.html`
-4. Exit the EC2 by runing `exit`
-5. Run the following commands to copy files into the user interface EC2 using your private key: 
+5. In a new terminal run the following commands to copy files into the user interface EC2 using your private key: 
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\user ubuntu@[user-EC2-ip]:/var/www/html/`
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[user-EC2-ip]:/var/www/html/`
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\user-website.conf ubuntu@[user-EC2-ip]:/etc/apache2/sites-available/`
     - `scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[user-EC2-ip]:/var/www/html/common`
-6. Run these two commands to enable our configurations and restart the server:
+6. Back in the ssh terminal run these commands to install and configure composer and php-xml:
+    - `sudo apt install composer`
+    - `cd /var/www/html`
+    - `composer require aws/aws-sdk-php`
+    - `sudo apt-get install php-xml`
+7. Run these two commands to enable our configurations and restart the server:
     - `sudo a2ensite user-website`
     - `sudo systemctl reload apache2`
 
@@ -163,7 +179,12 @@ Admin will be able to:
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[admin-EC2-ip]:/var/www/html/`
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\admin-website.conf ubuntu@[admin-EC2-ip]:/etc/apache2/sites-available/`
     - `scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[admin-EC2-ip]:/var/www/html/common`
-6. Run these two commands to enable our configurations and restart the server:
+6. Back in the ssh terminal run these commands to install and configure composer and php-xml:
+    - `sudo apt install composer`
+    - `cd /var/www/html`
+    - `composer require aws/aws-sdk-php`
+    - `sudo apt-get install php-xml`
+7. Run these two commands to enable our configurations and restart the server:
     - `sudo a2ensite admin-website`
     - `sudo systemctl reload apache2`
 
