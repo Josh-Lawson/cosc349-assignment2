@@ -121,12 +121,12 @@ output "admin_interface" {
 }
 
 output "admin_internal_ip" {
-  value = aws_instance.admin_instance.private_ip
+  value = aws_instance.admin_interface.private_ip
   description = "Internal IP address for the admin instance"
 }
 
 output "user_internal_ip" {
-  value = aws_instance.user_instance.private_ip
+  value = aws_instance.user_interface.private_ip
   description = "Internal IP address for the user instance"
 }
 
