@@ -148,7 +148,7 @@ Admin will be able to:
     - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\admin-website.conf ubuntu@[admin-EC2-ip]:/etc/apache2/sites-available/`
     - `scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[admin-EC2-ip]:/var/www/html/common`
 
-### Create and load data into Database
+### Create Database and Load in Data
 
 1. Run the following command to create the database: 
     - `mysql -h [RDS-Endpoint] -P 3306 -u admin -p mydb < local_database.sql`
