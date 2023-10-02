@@ -17,7 +17,7 @@
 
 --
 -- Table structure for table `Ingredient`
---S
+--
 
 DROP TABLE IF EXISTS `Ingredient`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
