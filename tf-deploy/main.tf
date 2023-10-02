@@ -93,11 +93,6 @@ resource "aws_instance" "admin_interface" {
 
   user_data = <<-EOF
               #!/bin/bash
-
-              cp admin-website.conf /etc/apache2/sites-available/admin-website.conf
-              INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
-              sed -i "s/ADMIN_IP_PLACEHOLDER/$INTERNAL_IP/g" /etc/apache2/sites-available/admin-website.conf
-
               sudo apt update
               sudo apt install -y apache2 php libapache2-mod-php php-mysql awscli
               sudo a2dissite 000-default
@@ -111,6 +106,16 @@ resource "aws_instance" "admin_interface" {
   }
 
 }
+
+resource "aws_sns_topic" "user_notifications" {
+  name = "UserNotifications"
+}
+
+output "sns_topic_arn" {
+  value = aws_sns_topic.user_notifications.arn
+  description = "ARN of the User Notifications SNS Topic"
+}
+
 
 output "user_interface" {
   value = aws_instance.user_interface.public_ip
