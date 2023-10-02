@@ -38,9 +38,9 @@ $userIp = getenv('USER_IP');
  * Redirects the user to the appropriate recipe view page based on their role
  */
 if($row['role'] == 'admin'){
-    header('Location: http://$adminIp/recipe_admin_view.php?recipeId=$recipeId');
+    header("Location: http://$adminIp/recipe_admin_view.php?recipeId=$recipeId");
 } else {
-    header('Location: http://$userIp/recipe_user_view.php?recipeId=$recipeId');
+    header("Location: http://$userIp/recipe_user_view.php?recipeId=$recipeId");
 }
 $conn->close();
 ?>

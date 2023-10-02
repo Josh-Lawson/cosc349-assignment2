@@ -20,12 +20,12 @@ $userIp = getenv('USER_IP');
             <?php echo $_SERVER['SERVER_ADDR'] == "$adminIp" ? "Admin Sign In" : "Sign In" ?>
         </h1>
 
-        <?php if ($_SERVER['SERVER_ADDR'] == "$adminIp"): ?>
+        <?php if ($_SERVER['SERVER_ADDR'] == $adminIp): ?>
             <h3>Please use your admin credentials to sign in to the admin interface</h3><br>
         <?php endif; ?>
         <fieldset>
 
-            <?php if ($_SERVER['SERVER_ADDR'] == "$userIp"): ?>
+            <?php if ($_SERVER['SERVER_ADDR'] == $userIp): ?>
                 <legend>&nbsp;Please Sign In Using Your Username And Password</legend><br>
             <?php endif; ?>
 
@@ -37,8 +37,8 @@ $userIp = getenv('USER_IP');
                     required pattern=".{8,}" title="Password must be at least 8 characters.">
                 <button type="submit">Sign In</button>
             </form><br>
-            <?php if ($_SERVER['SERVER_ADDR'] == "userIp"): ?>
-                <p>&nbsp;Don't have an account? <a href="create_account.php">Create one</a></p>
+            <?php if ($_SERVER['SERVER_ADDR'] == "$userIp"): ?>
+                <p>&nbsp;Don't have an account? <a href="http://<?php echo $userIp; ?>/common/create_account.php">Create one</a></p>
             <?php endif; ?>
         </fieldset>
 
