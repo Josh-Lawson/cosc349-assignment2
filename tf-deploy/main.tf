@@ -107,15 +107,19 @@ resource "aws_instance" "admin_interface" {
 
 }
 
-resource "aws_sns_topic" "user_notifications" {
-  name = "UserNotifications"
+resource "aws_s3_bucket" "recipe_images" {
+  bucket = "recipe-images-storage-bucket" 
+  acl    = "private"
+
+  tags = {
+    Name        = "Recipe Images Storage"
+    Environment = "Prod"
+  }
 }
 
-output "sns_topic_arn" {
-  value = aws_sns_topic.user_notifications.arn
-  description = "ARN of the User Notifications SNS Topic"
+output "s3_bucket_arn" {
+  value = aws_s3_bucket.recipe_images.arn
 }
-
 
 output "user_interface" {
   value = aws_instance.user_interface.public_ip
