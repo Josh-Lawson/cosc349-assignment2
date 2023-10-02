@@ -97,17 +97,22 @@ Admin will be able to:
     - `RDS_ENDPOINT=$(terraform output rds_endpoint | tr -d '"')`
     - `USER_IP=$(terraform output user_interface | tr -d '"')`
     - `ADMIN_IP=$(terraform output admin_interface | tr -d '"')`
-    - `USER_INTERNAL_IP=$(terraform output user_internal_ip)`
-    - `ADMIN_INTERNAL_IP=$(terraform output admin_internal_ip)`
+    - `USER_INTERNAL_IP=$(terraform output user_internal_ip | tr -d '"')`
+    - `ADMIN_INTERNAL_IP=$(terraform output admin_internal_ip | tr -d '"')`
 
 ### Setting the Internal IP Addresses
 
-1. Run the following commands to replace the placeholders for the servers' internal IP addresses
-    in the .conf files:
+1. Run the following commands to replace the placeholders for the EC2 public IP addresses
+    into both .conf files:
     - `sed -i "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" admin-website.conf`
     - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" admin-website.conf`
     - `sed -i "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" user-website.conf`
     - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" user-website.conf`
+2. Run the following commands to do the same for the servers' internal IP addresses:
+    - `sed -i "s/INTERNAL_ADMIN_IP_PLACEHOLDER/$ADMIN_INTERNAL_IP/g" admin-website.conf`
+    - `sed -i "s/INTERNAL_USER_IP_PLACEHOLDER/$USER_INTERNAL_IP/g" admin-website.conf`
+    - `sed -i "s/INTERNAL_ADMIN_IP_PLACEHOLDER/$ADMIN_INTERNAL_IP/g" user-website.conf`
+    - `sed -i "s/INTERNAL_USER_IP_PLACEHOLDER/$USER_INTERNAL_IP/g" user-website.conf`
 
 ### Setting the RDS Endpoint
 
