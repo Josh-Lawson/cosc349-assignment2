@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'version' => 'latest',
             'region' => 'us-east-1'
         ]);
-    
+
         $result = $client->invoke([
             'FunctionName' => 's3ImageHandler',
             'Payload' => json_encode([
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 'content' => $imageContent
             ])
         ]);
-    
+
         $response = json_decode($result['Payload'], true);
         if (isset($response['errorMessage'])) {
             die("Error uploading image: " . $response['errorMessage']);
@@ -60,6 +60,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         echo "There was an error uploading the file.";
     }
+
+    $checkImageName = $conn->prepare("SELECT * FROM Recipe WHERE imageName = ?");
+    $checkImageName->bind_param("s", $imageName);
+    $checkImageName->execute();
+    $result = $checkImageName->get_result();
+
+    if ($result->num_rows > 0) {
+
+        echo "Image name already exists. Please choose a different name.";
+        exit;
+    }
+
 
     $conn->begin_transaction();
 

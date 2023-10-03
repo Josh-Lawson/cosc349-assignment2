@@ -55,6 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die("Error uploading image: " . $response['errorMessage']);
     }
 
+    $checkImageName = $conn->prepare("SELECT * FROM Recipe WHERE imageName = ?");
+    $checkImageName->bind_param("s", $imageName);
+    $checkImageName->execute();
+    $result = $checkImageName->get_result();
+
+    if ($result->num_rows > 0) {
+        echo "Image name already exists. Please choose a different name.";
+        exit;
+    }
+
 
     $conn->begin_transaction();
 

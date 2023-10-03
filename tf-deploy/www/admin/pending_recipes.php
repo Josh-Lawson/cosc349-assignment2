@@ -36,10 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     } elseif (isset($_POST['deny'])) {
 
-        /**
-         * Prepares a SQL statement to delete the recipe from the database
-         */
         $recipeId = $_POST['recipeId'];
+        $deleteIngredientsStmt = $conn->prepare("DELETE FROM RecipeIngredient WHERE recipeId = ?");
+        $deleteIngredientsStmt->bind_param("i", $recipeId);
+        $deleteIngredientsStmt->execute();
+        $deleteIngredientsStmt->close();
+
         $stmt = $conn->prepare("DELETE FROM Recipe WHERE recipeId = ?");
         $stmt->bind_param("i", $recipeId);
         $stmt->execute();
@@ -68,52 +70,60 @@ $result = $conn->query("SELECT * FROM Recipe WHERE approved = 0");
         <?php include '../common/navbar.php'; ?>
     </header>
     <main>
-    <h1>Pending Recipes</h1><br>
-    <table border="1">
-        <tr>
-            <th>Recipe Name</th>
-            <th>Description</th>
-            <th>Instructions</th>
-            <th>Approve Recipe</th>
-            <th>Deny Recipe</th>
-        </tr>
-        <?php
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $recipeId = $row['recipeId'];
-                $recipeName = $row['recipeName'];
-                $description = $row['description'];
-                $instructions = $row['instructions'];
-        ?>
+        <h1>Pending Recipes</h1><br>
+        <table border="1">
             <tr>
-                <td><?php echo $recipeName; ?></td>
-                <td><?php echo $description; ?></td>
-                <td><?php echo $instructions; ?></td>
-                <td>
-                    <form action="" method="POST">
-                        <input type="hidden" name="recipeId" value="<?php echo $recipeId; ?>">
-                        <input type="submit" name="approve" value="Approve">
-                    </form>
-                </td>
-                <td>
-                    <form action="" method="POST">
-                        <input type="hidden" name="recipeId" value="<?php echo $recipeId; ?>">
-                        <input type="submit" name="deny" value="Deny">
-                    </form>
-                </td>
+                <th>Recipe Name</th>
+                <th>Description</th>
+                <th>Instructions</th>
+                <th>Approve Recipe</th>
+                <th>Deny Recipe</th>
             </tr>
-        <?php
+            <?php
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $recipeId = $row['recipeId'];
+                    $recipeName = $row['recipeName'];
+                    $description = $row['description'];
+                    $instructions = $row['instructions'];
+                    ?>
+                    <tr>
+                        <td>
+                            <?php echo $recipeName; ?>
+                        </td>
+                        <td>
+                            <?php echo $description; ?>
+                        </td>
+                        <td>
+                            <?php echo $instructions; ?>
+                        </td>
+                        <td>
+                            <form action="" method="POST">
+                                <input type="hidden" name="recipeId" value="<?php echo $recipeId; ?>">
+                                <input type="submit" name="approve" value="Approve">
+                            </form>
+                        </td>
+                        <td>
+                            <form action="" method="POST">
+                                <input type="hidden" name="recipeId" value="<?php echo $recipeId; ?>">
+                                <input type="submit" name="deny" value="Deny">
+                            </form>
+                        </td>
+                    </tr>
+                    <?php
+                }
+            } else {
+                echo "<tr><td colspan='4'>0 results</td></tr>";
             }
-        } else {
-            echo "<tr><td colspan='4'>0 results</td></tr>";
-        }
-        ?>
-    </table>
+            ?>
+        </table>
     </main>
 </body>
 
 </html>
 <?php
-$stmt->close();
+if (isset($stmt)) {
+    $stmt->close();
+}
 $conn->close();
 ?>
