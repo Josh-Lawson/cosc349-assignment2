@@ -2,12 +2,13 @@
 
 ## Brief Description
 
-This application is an online recipe management system that makes use of 3 virtual 
-machines; a user interface, a database server, and an admin interface.
+This application is an online recipe management system. The application is deployed to AWS
+using Terraform. The application is run using two EC2 instances, a RDS instance, a lambda function
+and an S3 bucket.
 
-## VM 1: User Interface
+## User Interface EC2
 
-This vm will be repsonsible for running the user web interface of the application, where 
+This EC2 instance is running an Apche web server for the user interface of the application, where 
 users interact with the system.
 
 Users will be able to:
@@ -16,11 +17,12 @@ Users will be able to:
 2. Log in to their account
 3. Search for recipes
 4. Create and submit custom recipes
+5. Upload images for recipes
 
 
-## VM 2: Database Server
+## RDS - Managed Relational Database Server
 
-This vm will be responsible for data storage. It will use MySQL to host the database that
+The RDS is responsible for the data storage of the system. It is using MySQL to host the database that
 contains data related to this application.
 
 The database has the following tables:
@@ -32,13 +34,14 @@ The database has the following tables:
     - Stores names and identifiers of all ingredients used in the system
 4. Recipe
     - Stores information related to the recipe itself such as intructions
+    - Stores the name of the image used to fetch from the S3 bucket
 5. RecipeIngredient
     - Matches ingredients with recipes using the unique identifiers
 
 
-## VM 3: Admin Interface
+## Admin Interface EC2
 
-This vm will be responsible for running the admin web interface of the application, 
+This EC2 instance is running an Apche web server for the admin interface of the application, 
 where administrators interact with the system with a higher level of
 privilege than regular users.
 
@@ -47,6 +50,19 @@ Admin will be able to:
 1. Create and delete user accounts
 2. Create, edit, and delete recipes
 3. Approve or deny recipes submitted by users and pending review
+4. Upload images
+
+
+## S3 Bucket
+
+The S3 bucket is used to store the images of recipes. Images can be uploaded to the S3 bucket 
+by both users and admins. Admins can reviews images that users submit before they become available
+to view by other users.
+
+
+## Lambda Function
+
+The lambda function handles images being uploaded and retrieved to and from the S3 bucket.
 
 
 ## Deploying and Running the Application
@@ -99,12 +115,14 @@ Admin will be able to:
     - `AWS_SECRET_KEY=[AWS SECRET KEY]`
 3. Next we will be saving the IP addresses of the EC2 instances, the servers' internal 
     IP addresses, and the endpoint of the RDS instance, run the following commands:
-    - `RDS_ENDPOINT=$(terraform output rds_endpoint | tr -d '"')`
-    - `USER_IP=$(terraform output user_interface | tr -d '"')`
-    - `ADMIN_IP=$(terraform output admin_interface | tr -d '"')`
-    - `USER_INTERNAL_IP=$(terraform output user_internal_ip | tr -d '"')`
-    - `ADMIN_INTERNAL_IP=$(terraform output admin_internal_ip | tr -d '"')`
-4. Before moving forward, please check that the EC2 public IP addresses outputted from terraform match the
+```
+RDS_ENDPOINT=$(terraform output rds_endpoint | tr -d '"')
+USER_IP=$(terraform output user_interface | tr -d '"')
+ADMIN_IP=$(terraform output admin_interface | tr -d '"')
+USER_INTERNAL_IP=$(terraform output user_internal_ip | tr -d '"')
+ADMIN_INTERNAL_IP=$(terraform output admin_internal_ip | tr -d '"')
+```
+5. Before moving forward, please check that the EC2 public IP addresses outputted from terraform match the
     IP address in AWS.
     - Navigate to the EC2 Dashboard
     - Select "running instances"
@@ -160,17 +178,19 @@ sed -e "s/INTERNAL_ADMIN_IP_PLACEHOLDER/$ADMIN_INTERNAL_IP/g" \
     - `sudo chown ubuntu:ubuntu /etc/apache2/sites-available/`
 3. Remove the default apache page:
     - `sudo rm /var/www/html/index.html`
-5. In a new terminal run the following commands to copy files into the user interface EC2 using your private key: 
-    - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\user ubuntu@[user-EC2-ip]:/var/www/html/`
-    - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[user-EC2-ip]:/var/www/html/`
-    - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\user-website.conf ubuntu@[user-EC2-ip]:/etc/apache2/sites-available/`
-    - `scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[user-EC2-ip]:/var/www/html/common`
-6. Back in the ssh terminal run these commands to install and configure composer and php-xml:
+5. In a new terminal run the following commands to copy files into the user interface EC2 using your private key:
+```
+scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\user ubuntu@[user-EC2-ip]:/var/www/html/
+scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[user-EC2-ip]:/var/www/html/
+scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\user-website.conf ubuntu@[user-EC2-ip]:/etc/apache2/sites-available/
+scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[user-EC2-ip]:/var/www/html/common
+```
+7. Back in the ssh terminal run these commands to install and configure composer and php-xml:
     - `sudo apt install composer`
     - `cd /var/www/html`
     - `composer require aws/aws-sdk-php`
     - `sudo apt-get install php-xml`
-7. Run these two commands to enable our configurations and restart the server:
+8. Run these two commands to enable our configurations and restart the server:
     - `sudo a2ensite user-website`
     - `sudo systemctl reload apache2`
 
@@ -184,17 +204,19 @@ sed -e "s/INTERNAL_ADMIN_IP_PLACEHOLDER/$ADMIN_INTERNAL_IP/g" \
 3. Remove the default apache page:
     - `sudo rm /var/www/html/index.html` 
 4. Exit the EC2 by runing `exit`
-5. Run the following commands to copy files into the admin interface EC2 using your private key: 
-    - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\admin ubuntu@[admin-EC2-ip]:/var/www/html/`
-    - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[admin-EC2-ip]:/var/www/html/`
-    - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\admin-website.conf ubuntu@[admin-EC2-ip]:/etc/apache2/sites-available/`
-    - `scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[admin-EC2-ip]:/var/www/html/common`
-6. Back in the ssh terminal run these commands to install and configure composer and php-xml:
+5. Run the following commands to copy files into the admin interface EC2 using your private key:
+```
+scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\admin ubuntu@[admin-EC2-ip]:/var/www/html/
+scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[admin-EC2-ip]:/var/www/html/
+scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\admin-website.conf ubuntu@[admin-EC2-ip]:/etc/apache2/sites-available/
+scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[admin-EC2-ip]:/var/www/html/common
+```
+7. Back in the ssh terminal run these commands to install and configure composer and php-xml:
     - `sudo apt install composer`
     - `cd /var/www/html`
     - `composer require aws/aws-sdk-php`
     - `sudo apt-get install php-xml`
-7. Run these two commands to enable our configurations and restart the server:
+8. Run these two commands to enable our configurations and restart the server:
     - `sudo a2ensite admin-website`
     - `sudo systemctl reload apache2`
 
