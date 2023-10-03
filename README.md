@@ -252,6 +252,11 @@ the option to create an account or log in using the pre loaded dummy data:
 Please note that creating an account will only grant you with the basic user level privilege and access to the user 
 interface. Please use the pre loaded admin credentials to access the admin interface.
 
+Please also note, that upon first deploying the application to the cloud, the recipes will not have images by default. You can either 
+upload images with the correct name (see dummy imageName set in insert-data.sql) directly to the S3 bucket, or you can use the application
+admin interface to update the recipes' images by uploading an image (which will set a new imageName). You can also upload images when adding 
+new recipes in both the user and admin interfaces. 
+
 ### (Optional) Use Elastic IP (EIP) 
 
 In your AWS account, you can create an EIP and assign it to ther user interface EC2. This way even
