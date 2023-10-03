@@ -72,6 +72,7 @@ Admin will be able to:
 5. From the cloned project repository location run: `vagrant up`
     - This will automatically start the vagrant virtual machione
 6. Run `vagrant ssh default` 
+7. Change into the tf-deploy directory: `cd /vagrant/tf-deploy`
 
 
 ### AWS CLI
@@ -97,36 +98,42 @@ Admin will be able to:
     - `AWS_ACCESS_KEY=[AWS ACCESS KEY]`
     - `AWS_SECRET_KEY=[AWS SECRET KEY]`
 3. Next we will be saving the IP addresses of the EC2 instances, the servers' internal 
-    IP addresses, the endpoint of the RDS instance, and the sns topic arn, run the following commands:
+    IP addresses, and the endpoint of the RDS instance, run the following commands:
     - `RDS_ENDPOINT=$(terraform output rds_endpoint | tr -d '"')`
     - `USER_IP=$(terraform output user_interface | tr -d '"')`
     - `ADMIN_IP=$(terraform output admin_interface | tr -d '"')`
     - `USER_INTERNAL_IP=$(terraform output user_internal_ip | tr -d '"')`
     - `ADMIN_INTERNAL_IP=$(terraform output admin_internal_ip | tr -d '"')`
-    - `SNS_TOPIC_ARN=$(terraform output sns_topic_arn | tr -d '"')`
+4. Before moving forward, please check that the EC2 public IP addresses outputted from terraform match the
+    IP address in AWS.
+    - Navigate to the EC2 Dashboard
+    - Select "running instances"
+    - The IP addresses for each EC2 instance should be in the "Public IPv4 address" column
+    - If they are different please set the ADMIN_IP and USER_IP envirtonment variables before proceeding:
+        - `ADMIN_IP=[admin-ec2-ip]`
+        - `USER_IP=[user-ec2-ip]`
 
 
 ### Setting Dynamic Variables in .conf files
 
-2. Run the following commands to replace the placeholders for the servers' internal IP addresses
-    into both .conf files:
-    - `sed -i "s/INTERNAL_ADMIN_IP_PLACEHOLDER/$ADMIN_INTERNAL_IP/g" admin-website.conf`
-    - `sed -i "s/INTERNAL_USER_IP_PLACEHOLDER/$USER_INTERNAL_IP/g" admin-website.conf`
-    - `sed -i "s/INTERNAL_ADMIN_IP_PLACEHOLDER/$ADMIN_INTERNAL_IP/g" user-website.conf`
-    - `sed -i "s/INTERNAL_USER_IP_PLACEHOLDER/$USER_INTERNAL_IP/g" user-website.conf`
-1. Run the following commands to do the same for the EC2 public IP addresses:
-    - `sed -i "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" admin-website.conf`
-    - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" admin-website.conf`
-    - `sed -i "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" user-website.conf`
-    - `sed -i "s/USER_IP_PLACEHOLDER/$USER_IP/g" user-website.conf`
-3. Run the following commands to do the same for the AWS access and secret keys:
-    - `sed -i "s/AWS_ACCESS_KEY_PLACEHOLDER/$AWS_ACCESS_KEY/g" admin-website.conf`
-    - `sed -i "s/AWS_SECRET_KEY_PLACEHOLDER/$AWS_SECRET_KEY/g" admin-website.conf`
-    - `sed -i "s/AWS_ACCESS_KEY_PLACEHOLDER/$AWS_ACCESS_KEY/g" user-website.conf`
-    - `sed -i "s/AWS_SECRET_KEY_PLACEHOLDER/$AWS_SECRET_KEY/g" user-website.conf`
-4/ Run the following commands to do the same for the SNS Topic ARN:
-    - `sed -i "s/SNS_TOPIC_ARN_PLACEHOLDER/$SNS_TOPIC_ARN/g" user-website.conf`
-    - `sed -i "s/SNS_TOPIC_ARN_PLACEHOLDER/$SNS_TOPIC_ARN/g" admin-website.conf`
+1. Run the following command to replace the placeholders in the admin-website.conf
+```
+sed -e "s/INTERNAL_ADMIN_IP_PLACEHOLDER/$ADMIN_INTERNAL_IP/g" \
+    -e "s/INTERNAL_USER_IP_PLACEHOLDER/$USER_INTERNAL_IP/g" \
+    -e "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" \
+    -e "s/USER_IP_PLACEHOLDER/$USER_IP/g" \
+    -e "s/AWS_ACCESS_KEY_PLACEHOLDER/$AWS_ACCESS_KEY/g" \
+    -e "s/AWS_SECRET_KEY_PLACEHOLDER/$AWS_SECRET_KEY/g" admin-website-template.conf > admin-website.conf
+```
+2. Run the follwoing command to replace the placeholders in the user-website.conf
+```
+sed -e "s/INTERNAL_ADMIN_IP_PLACEHOLDER/$ADMIN_INTERNAL_IP/g" \
+    -e "s/INTERNAL_USER_IP_PLACEHOLDER/$USER_INTERNAL_IP/g" \
+    -e "s/ADMIN_IP_PLACEHOLDER/$ADMIN_IP/g" \
+    -e "s/USER_IP_PLACEHOLDER/$USER_IP/g" \
+    -e "s/AWS_ACCESS_KEY_PLACEHOLDER/$AWS_ACCESS_KEY/g" \
+    -e "s/AWS_SECRET_KEY_PLACEHOLDER/$AWS_SECRET_KEY/g" user-website-template.conf > user-website.conf
+```
 
 
 ### Setting the RDS Endpoint
@@ -222,3 +229,19 @@ the option to create an account or log in using the pre loaded dummy data:
 
 Please note that creating an account will only grant you with the basic user level privilege and access to the user 
 interface. Please use the pre loaded admin credentials to access the admin interface.
+
+### (Optional) Use Elastic IP (EIP) 
+
+In your AWS account, you can create an EIP and assign it to ther user interface EC2. This way even
+if the IP address of the EC2 changes, the users can still access the application with the same IP address.
+
+1. Navigate to the EC2 dashboard
+2. Allocate a new EIP
+    - Click "Elastic IPs" under "Network and Security"
+    - Click "AllocateElastic IP address"
+3. Associate EIP with User Interface EC2
+    - Select IP and click "Actions"
+    - Choose "Associate Elastic IP address"
+    - Choose the User Interface EC2 from the instance dropdown
+    - Clicke "Associate"
+4. Users will now be able to access the application with the new Elastic IP
