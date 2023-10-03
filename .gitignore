@@ -4,3 +4,5 @@ ubuntu-xenial-16.04-cloudimg-console.log
 terraform.tfstate
 terraform.tfstate.backup
 db_config.php
+admin-website.conf
+user-website.conf
