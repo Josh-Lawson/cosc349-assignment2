@@ -1,6 +1,10 @@
 <?php
 include '../common/db_config.php';
 
+require '../vendor/autoload.php';
+use Aws\Lambda\LambdaClient;
+
+
 /**
  * @file
  * This file is used to edit a recipe.
@@ -71,6 +75,63 @@ for ($i = 0; $i < count($ingredientNames); $i++) {
      */
     $stmt = $conn->prepare("INSERT INTO RecipeIngredient (recipeId, ingredientId, quantity) VALUES (?, ?, ?)");
     $stmt->bind_param("iis", $recipeId, $ingredientId, $quantity);
+    $stmt->execute();
+}
+
+$sql = "SELECT * FROM Recipe WHERE recipeId = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $recipeId);
+$stmt->execute();
+$result = $stmt->get_result();
+$recipe = $result->fetch_assoc();
+
+function uploadRecipeImage($imageTempPath, $imageName) {
+    $imageContent = base64_encode(file_get_contents($imageTempPath));
+
+    $client = new LambdaClient([
+        'version' => 'latest',
+        'region'  => 'us-east-1'
+    ]);
+
+    $result = $client->invoke([
+        'FunctionName' => 's3ImageHandler',
+        'Payload' => json_encode([
+            'operation' => 'PUT',
+            'filename' => $imageName,
+            'content' => $imageContent
+        ])
+    ]);
+
+    $response = json_decode($result['Payload'], true);
+    if (isset($response['errorMessage'])) {
+        throw new Exception("Error uploading image: " . $response['errorMessage']);
+    }
+    return $imageName;
+}
+
+if (isset($_FILES['newRecipeImage']) && $_FILES['newRecipeImage']['tmp_name']) {
+    $newImageName = $_FILES['newRecipeImage']['name'];
+    $newImageTempPath = $_FILES['newRecipeImage']['tmp_name'];
+
+    $uploadedImageName = uploadRecipeImage($newImageTempPath, $newImageName);
+
+    $client = new LambdaClient([
+        'version' => 'latest',
+        'region'  => 'us-east-1'
+    ]);
+
+    if ($recipe['imageName'] && $recipe['imageName'] != $uploadedImageName) {
+        $client->invoke([
+            'FunctionName' => 's3ImageHandler',
+            'Payload' => json_encode([
+                'operation' => 'DELETE',
+                'filename' => $recipe['imageName']
+            ])
+        ]);
+    }
+
+    $stmt = $conn->prepare("UPDATE Recipe SET imageName = ? WHERE recipeId = ?");
+    $stmt->bind_param("si", $uploadedImageName, $recipeId);
     $stmt->execute();
 }
 

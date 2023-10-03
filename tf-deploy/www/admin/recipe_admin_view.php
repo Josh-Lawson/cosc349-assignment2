@@ -1,6 +1,35 @@
 <?php
 include '../common/db_config.php';
 
+require '../vendor/autoload.php';
+
+use Aws\Lambda\LambdaClient;
+
+/**
+ * This function retrieves the image from the AWS Lambda function.
+ */
+function getRecipeImage($imageName)
+{
+    $client = new LambdaClient([
+        'version' => 'latest',
+        'region' => 'us-east-1'
+    ]);
+
+    $result = $client->invoke([
+        'FunctionName' => 's3ImageHandler',
+        'Payload' => json_encode([
+            'operation' => 'GET',
+            'filename' => $imageName
+        ])
+    ]);
+
+    $response = json_decode($result['Payload'], true);
+    if (isset($response['errorMessage'])) {
+        return null; // handle errors as appropriate for your application
+    }
+    return "data:image/jpeg;base64," . $response;
+}
+
 /**
  * @file
  * This file is used for admins to view a recipe.
@@ -33,6 +62,9 @@ $result = $conn->query($sql);
 $ingredients = $result->fetch_all(MYSQLI_ASSOC);
 
 $conn->close();
+
+$imageDataUrl = getRecipeImage($recipe['imageName']);
+
 ?>
 <html>
 
@@ -51,15 +83,23 @@ $conn->close();
         <div class="recipe-details">
             <a href="../common/view_recipes.php">Back to Recipes</a><br><br>
 
-
             <h1>Update Recipe</h1><br>
 
-            <form action="edit_recipe.php" method="POST">
+            <?php if ($imageDataUrl): ?>
+                <div class="recipe-image-container">
+                    <img class="recipe-image" src="<?php echo $imageDataUrl; ?>" alt="Recipe Image" />
+                </div>
+            <?php endif; ?>
 
+            <form action="edit_recipe.php" method="POST" enctype="multipart/form-data">
+
+            <label for="newRecipeImage">Change Recipe Image:</label>
+            <input type="file" id="newRecipeImage" name="newRecipeImage" accept="image/*">
 
 
                 <h3>Recipe Name</h3>
                 <input type="text" name="recipeName" value="<?php echo $recipe['recipeName']; ?>">
+
 
                 <h3>Description</h3>
                 <textarea name="description"><?php echo $recipe['description']; ?></textarea>

@@ -50,7 +50,6 @@ if ($result->num_rows > 0) {
         }
     }
 } else {
-    session_start();
     $_SESSION['errorMessage'] = 'Invalid username or password';
     header('Location: sign_in.php');
 

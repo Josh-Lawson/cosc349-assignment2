@@ -18,6 +18,7 @@
 --
 -- Table structure for table `Ingredient`
 --
+use mydb;
 
 DROP TABLE IF EXISTS `Ingredient`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -52,6 +53,7 @@ CREATE TABLE `Recipe` (
   `instructions` text,
   `description` text,
   `approved` tinyint(1) DEFAULT '0',
+  `imageName` varchar(255),
   PRIMARY KEY (`recipeId`),
   UNIQUE KEY `recipeId` (`recipeId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
