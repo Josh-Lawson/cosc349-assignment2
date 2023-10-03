@@ -2,12 +2,13 @@
 
 ## Brief Description
 
-This application is an online recipe management system that makes use of 3 virtual 
-machines; a user interface, a database server, and an admin interface.
+This application is an online recipe management system. The application is deployed to AWS
+using Terraform. The application is run using two EC2 instances, a RDS instance, a lambda function
+and an S3 bucket.
 
-## VM 1: User Interface
+## User Interface EC2
 
-This vm will be repsonsible for running the user web interface of the application, where 
+This EC2 instance is running an Apche web server for the user interface of the application, where 
 users interact with the system.
 
 Users will be able to:
@@ -16,11 +17,12 @@ Users will be able to:
 2. Log in to their account
 3. Search for recipes
 4. Create and submit custom recipes
+5. Upload images for recipes
 
 
-## VM 2: Database Server
+## RDS - Managed Relational Database Server
 
-This vm will be responsible for data storage. It will use MySQL to host the database that
+The RDS is responsible for the data storage of the system. It is using MySQL to host the database that
 contains data related to this application.
 
 The database has the following tables:
@@ -32,13 +34,14 @@ The database has the following tables:
     - Stores names and identifiers of all ingredients used in the system
 4. Recipe
     - Stores information related to the recipe itself such as intructions
+    - Stores the name of the image used to fetch from the S3 bucket
 5. RecipeIngredient
     - Matches ingredients with recipes using the unique identifiers
 
 
-## VM 3: Admin Interface
+## Admin Interface EC2
 
-This vm will be responsible for running the admin web interface of the application, 
+This EC2 instance is running an Apche web server for the admin interface of the application, 
 where administrators interact with the system with a higher level of
 privilege than regular users.
 
@@ -47,6 +50,7 @@ Admin will be able to:
 1. Create and delete user accounts
 2. Create, edit, and delete recipes
 3. Approve or deny recipes submitted by users and pending review
+4. Upload images
 
 
 ## Deploying and Running the Application
