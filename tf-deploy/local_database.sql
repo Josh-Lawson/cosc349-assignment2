@@ -53,7 +53,7 @@ CREATE TABLE `Recipe` (
   `instructions` text,
   `description` text,
   `approved` tinyint(1) DEFAULT '0',
-  `imageName` varchar(255),
+  `imageName` varchar(255) UNIQUE,
   PRIMARY KEY (`recipeId`),
   UNIQUE KEY `recipeId` (`recipeId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
