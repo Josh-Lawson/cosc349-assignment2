@@ -99,12 +99,14 @@ Admin will be able to:
     - `AWS_SECRET_KEY=[AWS SECRET KEY]`
 3. Next we will be saving the IP addresses of the EC2 instances, the servers' internal 
     IP addresses, and the endpoint of the RDS instance, run the following commands:
-    - `RDS_ENDPOINT=$(terraform output rds_endpoint | tr -d '"')`
-    - `USER_IP=$(terraform output user_interface | tr -d '"')`
-    - `ADMIN_IP=$(terraform output admin_interface | tr -d '"')`
-    - `USER_INTERNAL_IP=$(terraform output user_internal_ip | tr -d '"')`
-    - `ADMIN_INTERNAL_IP=$(terraform output admin_internal_ip | tr -d '"')`
-4. Before moving forward, please check that the EC2 public IP addresses outputted from terraform match the
+```
+RDS_ENDPOINT=$(terraform output rds_endpoint | tr -d '"')
+USER_IP=$(terraform output user_interface | tr -d '"')
+ADMIN_IP=$(terraform output admin_interface | tr -d '"')
+USER_INTERNAL_IP=$(terraform output user_internal_ip | tr -d '"')
+ADMIN_INTERNAL_IP=$(terraform output admin_internal_ip | tr -d '"')
+```
+5. Before moving forward, please check that the EC2 public IP addresses outputted from terraform match the
     IP address in AWS.
     - Navigate to the EC2 Dashboard
     - Select "running instances"
@@ -160,17 +162,19 @@ sed -e "s/INTERNAL_ADMIN_IP_PLACEHOLDER/$ADMIN_INTERNAL_IP/g" \
     - `sudo chown ubuntu:ubuntu /etc/apache2/sites-available/`
 3. Remove the default apache page:
     - `sudo rm /var/www/html/index.html`
-5. In a new terminal run the following commands to copy files into the user interface EC2 using your private key: 
-    - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\user ubuntu@[user-EC2-ip]:/var/www/html/`
-    - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[user-EC2-ip]:/var/www/html/`
-    - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\user-website.conf ubuntu@[user-EC2-ip]:/etc/apache2/sites-available/`
-    - `scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[user-EC2-ip]:/var/www/html/common`
-6. Back in the ssh terminal run these commands to install and configure composer and php-xml:
+5. In a new terminal run the following commands to copy files into the user interface EC2 using your private key:
+```
+scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\user ubuntu@[user-EC2-ip]:/var/www/html/
+scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[user-EC2-ip]:/var/www/html/
+scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\user-website.conf ubuntu@[user-EC2-ip]:/etc/apache2/sites-available/
+scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[user-EC2-ip]:/var/www/html/common
+```
+7. Back in the ssh terminal run these commands to install and configure composer and php-xml:
     - `sudo apt install composer`
     - `cd /var/www/html`
     - `composer require aws/aws-sdk-php`
     - `sudo apt-get install php-xml`
-7. Run these two commands to enable our configurations and restart the server:
+8. Run these two commands to enable our configurations and restart the server:
     - `sudo a2ensite user-website`
     - `sudo systemctl reload apache2`
 
@@ -184,17 +188,19 @@ sed -e "s/INTERNAL_ADMIN_IP_PLACEHOLDER/$ADMIN_INTERNAL_IP/g" \
 3. Remove the default apache page:
     - `sudo rm /var/www/html/index.html` 
 4. Exit the EC2 by runing `exit`
-5. Run the following commands to copy files into the admin interface EC2 using your private key: 
-    - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\admin ubuntu@[admin-EC2-ip]:/var/www/html/`
-    - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[admin-EC2-ip]:/var/www/html/`
-    - `scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\admin-website.conf ubuntu@[admin-EC2-ip]:/etc/apache2/sites-available/`
-    - `scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[admin-EC2-ip]:/var/www/html/common`
-6. Back in the ssh terminal run these commands to install and configure composer and php-xml:
+5. Run the following commands to copy files into the admin interface EC2 using your private key:
+```
+scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\admin ubuntu@[admin-EC2-ip]:/var/www/html/
+scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\www\common ubuntu@[admin-EC2-ip]:/var/www/html/
+scp -r -i ~\.ssh\cosc349-2023.pem tf-deploy\admin-website.conf ubuntu@[admin-EC2-ip]:/etc/apache2/sites-available/
+scp -i ~\.ssh\cosc349-2023.pem tf-deploy\db_config.php ubuntu@[admin-EC2-ip]:/var/www/html/common
+```
+7. Back in the ssh terminal run these commands to install and configure composer and php-xml:
     - `sudo apt install composer`
     - `cd /var/www/html`
     - `composer require aws/aws-sdk-php`
     - `sudo apt-get install php-xml`
-7. Run these two commands to enable our configurations and restart the server:
+8. Run these two commands to enable our configurations and restart the server:
     - `sudo a2ensite admin-website`
     - `sudo systemctl reload apache2`
 
