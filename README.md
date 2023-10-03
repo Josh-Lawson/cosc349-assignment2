@@ -53,6 +53,18 @@ Admin will be able to:
 4. Upload images
 
 
+## S3 Bucket
+
+The S3 bucket is used to store the images of recipes. Images can be uploaded to the S3 bucket 
+by both users and admins. Admins can reviews images that users submit before they become available
+to view by other users.
+
+
+## Lambda Function
+
+The lambda function handles images being uploaded and retrieved to and from the S3 bucket.
+
+
 ## Deploying and Running the Application
 
 ### Prerequisites
