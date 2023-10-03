@@ -107,14 +107,43 @@ resource "aws_instance" "admin_interface" {
 
 }
 
+resource "aws_lambda_function" "s3_image_handler" {
+  filename      = "lambda_function_payload.zip"
+  function_name = "s3ImageHandler"
+  role          = "arn:aws:iam::637158798664:role/LabRole"
+  handler       = "index.handler"
+  runtime       = "nodejs14.x"
+
+  source_code_hash = filebase64sha256("lambda_function_payload.zip")
+
+  environment {
+    variables = {
+      S3_BUCKET = aws_s3_bucket.recipe_images.bucket
+    }
+  }
+}
+
+
 resource "aws_s3_bucket" "recipe_images" {
   bucket = "recipe-images-storage-bucket" 
-  acl    = "private"
+
+  versioning {
+    enabled = false
+  }
 
   tags = {
     Name        = "Recipe Images Storage"
     Environment = "Prod"
   }
+}
+
+resource "aws_s3_bucket_public_access_block" "recipe_images_access" {
+  bucket = aws_s3_bucket.recipe_images.bucket
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
 }
 
 output "s3_bucket_arn" {
