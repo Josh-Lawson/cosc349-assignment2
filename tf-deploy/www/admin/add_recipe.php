@@ -33,29 +33,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $ingredients = $_POST['ingredients'];
     $quantities = $_POST['quantities'];
 
-    $imageName = $_FILES['recipeImage']['name'];
-    $imageTempPath = $_FILES['recipeImage']['tmp_name'];
-    $imageContent = base64_encode(file_get_contents($imageTempPath));
+    if (isset($_FILES['recipeImage']) && $_FILES['recipeImage']['error'] == UPLOAD_ERR_OK) {
+        $imageName = $_FILES['recipeImage']['name'];
+        $imageTempPath = $_FILES['recipeImage']['tmp_name'];
+        $imageContent = base64_encode(file_get_contents($imageTempPath));
 
-    $client = new LambdaClient([
-        'version' => 'latest',
-        'region' => 'YOUR_AWS_REGION'
-    ]);
+        $client = new LambdaClient([
+            'version' => 'latest',
+            'region' => 'us-east-1'
+        ]);
+    
+        $result = $client->invoke([
+            'FunctionName' => 's3ImageHandler',
+            'Payload' => json_encode([
+                'operation' => 'PUT',
+                'filename' => $imageName,
+                'content' => $imageContent
+            ])
+        ]);
+    
+        $response = json_decode($result['Payload'], true);
+        if (isset($response['errorMessage'])) {
+            die("Error uploading image: " . $response['errorMessage']);
+        }
 
-    $result = $client->invoke([
-        'FunctionName' => 's3ImageHandler',
-        'Payload' => json_encode([
-            'operation' => 'PUT',
-            'filename' => $imageName,
-            'content' => $imageContent
-        ])
-    ]);
-
-    $response = json_decode($result['Payload'], true);
-    if (isset($response['errorMessage'])) {
-        die("Error uploading image: " . $response['errorMessage']);
+    } else {
+        echo "There was an error uploading the file.";
     }
-
 
     $conn->begin_transaction();
 
@@ -63,11 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      * Prepares a SQL statement to insert the new recipe into the database
      */
     try {
-        $stmt = $conn->prepare("INSERT INTO Recipe (userId, recipeName, instructions, description, approved) VALUES (?, ?, ?, ?, 1, ?)");
+        $stmt = $conn->prepare("INSERT INTO Recipe (userId, recipeName, instructions, description, approved, imageName) VALUES (?, ?, ?, ?, 1, ?)");
         if ($stmt === false) {
             throw new Exception($conn->error);
         }
-        $stmt->bind_param("isss", $userId, $recipeName, $instructions, $description, $imageName);
+        $stmt->bind_param("issss", $userId, $recipeName, $instructions, $description, $imageName);
         $stmt->execute();
         $recipeId = $stmt->insert_id;
 
