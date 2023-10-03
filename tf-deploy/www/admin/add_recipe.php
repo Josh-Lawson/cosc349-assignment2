@@ -1,6 +1,10 @@
 <?php
 include '../common/db_config.php';
 
+require '../vendor/autoload.php';
+use Aws\Lambda\LambdaClient;
+
+
 /**
  * @file
  * This file is used to add a new recipe.
@@ -29,17 +33,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $ingredients = $_POST['ingredients'];
     $quantities = $_POST['quantities'];
 
+    $imageName = $_FILES['recipeImage']['name'];
+    $imageTempPath = $_FILES['recipeImage']['tmp_name'];
+    $imageContent = base64_encode(file_get_contents($imageTempPath));
+
+    $client = new LambdaClient([
+        'version' => 'latest',
+        'region' => 'YOUR_AWS_REGION'
+    ]);
+
+    $result = $client->invoke([
+        'FunctionName' => 's3ImageHandler',
+        'Payload' => json_encode([
+            'operation' => 'PUT',
+            'filename' => $imageName,
+            'content' => $imageContent
+        ])
+    ]);
+
+    $response = json_decode($result['Payload'], true);
+    if (isset($response['errorMessage'])) {
+        die("Error uploading image: " . $response['errorMessage']);
+    }
+
+
     $conn->begin_transaction();
 
     /**
      * Prepares a SQL statement to insert the new recipe into the database
      */
     try {
-        $stmt = $conn->prepare("INSERT INTO Recipe (userId, recipeName, instructions, description, approved) VALUES (?, ?, ?, ?, 1)");
+        $stmt = $conn->prepare("INSERT INTO Recipe (userId, recipeName, instructions, description, approved) VALUES (?, ?, ?, ?, 1, ?)");
         if ($stmt === false) {
             throw new Exception($conn->error);
         }
-        $stmt->bind_param("isss", $userId, $recipeName, $instructions, $description);
+        $stmt->bind_param("isss", $userId, $recipeName, $instructions, $description, $imageName);
         $stmt->execute();
         $recipeId = $stmt->insert_id;
 
@@ -118,10 +146,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </header>
         <main>
             <h1>Add Recipe</h1><br>
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
 
                 <label for="recipeName">Recipe Name</label>
                 <input type="text" id="recipeName" name="recipeName" required>
+
+                <label for="recipeImage">Recipe Image</label>
+                <input type="file" id="recipeImage" name="recipeImage" accept="image/*" required>
 
                 <label for="description">Description</label>
                 <textarea id="description" name="description" required></textarea>
@@ -136,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="text" id="quantity">
 
                 <button type="button" id="addIngredient">Add Ingredient</button><br>
-                
+
                 <label for="ingredientsTable">Ingredients Added</label>
                 <table id="ingredientsTable">
                     <thead>
@@ -148,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <tbody>
                     </tbody>
                 </table>
-                
+
 
                 <button type="submit">Submit Recipe</button>
             </form>
